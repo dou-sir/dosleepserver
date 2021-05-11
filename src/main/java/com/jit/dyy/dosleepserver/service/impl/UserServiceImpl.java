@@ -46,24 +46,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result loginByTel(User user) {
         Result result=new Result();
         try {
-            HashMap<String ,Object> map = new HashMap<>();
-            map.put("user_tel", user.getUserTel());
-            map.put("state", 1);
-            List<User> users = userMapper.selectByMap(map);
-            if(users.isEmpty()){
-                User user1 = registerByTel(user);
-                if (user1!=null){
+            User user1 = finduserByTel(user);
+            if(user1 == null){
+                User user2 = registerByTel(user);
+                if (user2 != null){
                     result.setMsg("注册成功");
                     result.setFlag(true);
                 }else {
                     result.setMsg("注册失败");
                     result.setFlag(false);
                 }
-                result.setDetail(user1);
+                result.setDetail(user2);
             }else {
                 result.setMsg("登录成功");
                 result.setFlag(true);
-                result.setDetail(users.get(0));
+                result.setDetail(user1);
             }
         }catch (Exception e){
             result.setMsg(e.getMessage());
@@ -76,6 +73,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result updateUser(User user) {
         Result result=new Result();
         try {
+            if ( finduserByName(user) ){
+                result.setMsg("用户名已被占用");
+                return result;
+            }else if ( finduserByTel(user) != null ) {
+                result.setMsg("手机号已被占用");
+                return result;
+            }
+
             int i = userMapper.updateById(user);
             if(i == 0){
                 result.setMsg("修改失败");
@@ -132,22 +137,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return result;
     }
 
-    private User registerByTel(User user){
+    /**
+     * 在无查询无使用中的手机号时注册
+     * @param user
+     * @return
+     */
+    private User registerByTel(User user) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("user_tel",user.getUserTel());
         User user2 = userMapper.selectOne(wrapper);
         if (user2 != null){
-            user = user2;
-            user.setState(1);
-            userMapper.updateById(user);
-        }else {
-            String s1 = user.getUserTel().substring(0, 2);
-            String s2 = user.getUserTel().substring(7,11);
-            user.setUserName(s1+"****"+s2);
-            userMapper.insert(user);
-            user = userMapper.selectOne(wrapper);
+//            user = user2;
+//            user.setState(1);
+//            userMapper.updateById(user);
+            userMapper.deleteById(user2);
         }
-
+        String s1 = user.getUserTel().substring(0, 3);
+        String s2 = user.getUserTel().substring(7, 11);
+        user.setUserName(s1+"****"+s2);
+        userMapper.insert(user);
+//            user = userMapper.selectOne(wrapper);
         return user;
     }
+
+    private boolean finduserByName(User user) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_name",user.getUserName());
+        wrapper.ne("user_id",user.getUserId());
+        wrapper.eq("state",1);
+        if (userMapper.selectOne(wrapper) != null){
+            return true;
+        }
+        return false;
+    }
+
+    private User finduserByTel(User user) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_tel",user.getUserTel());
+        if (user.getUserId() != null)
+            wrapper.ne("user_id",user.getUserId());
+        wrapper.eq("state",1);
+        return userMapper.selectOne(wrapper);
+    }
+
 }

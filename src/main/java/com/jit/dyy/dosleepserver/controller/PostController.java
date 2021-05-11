@@ -5,6 +5,7 @@ import com.jit.dyy.dosleepserver.bean.Post;
 import com.jit.dyy.dosleepserver.bean.Result;
 import com.jit.dyy.dosleepserver.bean.User;
 import com.jit.dyy.dosleepserver.service.IPostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/post")
 public class PostController {
 
+    @Autowired
     IPostService postService;
 
     @RequestMapping("/add")

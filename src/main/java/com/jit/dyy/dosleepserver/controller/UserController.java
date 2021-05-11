@@ -29,7 +29,7 @@ public class UserController {
      * @param user
      * @return
      */
-    @RequestMapping("/loginBytel")
+    @RequestMapping("/loginByTel")
     public Result loginBytel(@RequestBody User user){
         return userService.loginByTel(user);
     }
