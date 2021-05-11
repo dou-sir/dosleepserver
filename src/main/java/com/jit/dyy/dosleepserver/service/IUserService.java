@@ -6,5 +6,13 @@ import com.jit.dyy.dosleepserver.bean.User;
 
 public interface IUserService extends IService<User> {
 
-    public Result loginByName(User user);
+    Result loginByName(User user);
+
+    Result loginByTel(User user);
+
+    Result updateUser(User user);
+
+    Result findUserByID(User user);
+
+    Result deleteUser(User user);
 }
