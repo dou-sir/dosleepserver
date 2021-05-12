@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     @Autowired
-    IPostService postService;
+    private IPostService postService;
 
     @RequestMapping("/add")
     public Result addPost(@RequestBody Post post){

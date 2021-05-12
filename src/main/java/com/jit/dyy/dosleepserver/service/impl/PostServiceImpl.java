@@ -19,8 +19,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     PostMapper postMapper;
     @Autowired
     UserMapper userMapper;
-    @Autowired
-    LikeMapper likeMapper;
 
     @Override
     public Result addPost(Post post) {
@@ -91,6 +89,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
                 result.setMsg(postPage.getCurrent()+"");
                 result.setFlag(true);
                 for (Post post:postPage.getRecords()){
+                    addClout(post);
                     User owner = getOwner(post.getUserId());
                     post.setUserName(owner.getUserName());
                     post.setHeadImg(owner.getHeadImg());
@@ -120,6 +119,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
                 result.setMsg(postPage.getCurrent()+"");
                 result.setFlag(true);
                 for (Post post:postPage.getRecords()){
+                    addClout(post);
                     User owner = getOwner(post.getUserId());
                     post.setUserName(owner.getUserName());
                     post.setHeadImg(owner.getHeadImg());
@@ -170,6 +170,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             wrapper.orderByDesc("post_time");
             postMapper.findPostBylike(postPage,wrapper);
             for (Post post:postPage.getRecords()){
+                addClout(post);
                 User owner = getOwner(post.getUserId());
                 post.setUserName(owner.getUserName());
                 post.setHeadImg(owner.getHeadImg());
@@ -198,6 +199,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
             wrapper.eq("state",1);
             post = postMapper.selectOne(wrapper);
             if(post != null){
+                addClout(post);
                 result.setMsg("获取成功");
                 result.setFlag(true);
                 User owner = getOwner(post.getUserId());
@@ -220,5 +222,11 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         User user = new User();
         user = userMapper.selectOne(wrapper2);
         return user;
+    }
+
+    private void addClout(Post post){
+        post.setPostClout(post.getPostClout()+2);
+        post.setPostViews(post.getPostViews()+1);
+        postMapper.updateById(post);
     }
 }

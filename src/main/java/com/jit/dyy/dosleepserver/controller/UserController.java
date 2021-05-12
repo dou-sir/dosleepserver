@@ -49,12 +49,12 @@ public class UserController {
         return userService.deleteUser(user);
     }
 
-    @RequestMapping("/")
+    @RequestMapping("/test")
     public String testn(@RequestBody User user){
         return user.toString();
     }
 
-    @RequestMapping("/test")
+    @RequestMapping("/")
     public Result test(){
         HashMap<String ,Object> map = new HashMap<>();
         map.put("user_name", "dyy");
