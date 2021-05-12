@@ -1,6 +1,7 @@
 package com.jit.dyy.dosleepserver.bean;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -64,5 +65,9 @@ public class Post implements Serializable {
 
     private Integer state;
 
+    @TableField(exist = false)
+    private String userName;
 
+    @TableField(exist = false)
+    private String headImg;
 }

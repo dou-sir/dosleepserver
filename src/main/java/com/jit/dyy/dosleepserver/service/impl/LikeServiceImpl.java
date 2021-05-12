@@ -14,4 +14,9 @@ public class LikeServiceImpl extends ServiceImpl<LikeMapper, Like> implements IL
     public Result dolike(Like like) {
         return null;
     }
+
+    @Override
+    public Result dislike(Like like) {
+        return null;
+    }
 }

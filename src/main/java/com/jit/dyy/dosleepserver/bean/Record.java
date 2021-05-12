@@ -1,5 +1,6 @@
 package com.jit.dyy.dosleepserver.bean;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,5 +42,7 @@ public class Record implements Serializable {
      */
     private Date end;
 
+    @TableField(exist = false)
+    private String soundType;
 
 }

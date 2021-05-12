@@ -16,4 +16,9 @@
         <result column="state" property="state" />
     </resultMap>
 
+    <select id="findPostBylike" resultType="com.jit.dyy.dosleepserver.bean.Post">
+        SELECT tb_post.* FROM tb_like LEFT JOIN tb_post
+        ON tb_like.post_id = tb_post.post_id ${ew.customSqlSegment}
+    </select>
+
 </mapper>

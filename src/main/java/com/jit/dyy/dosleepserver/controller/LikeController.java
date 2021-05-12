@@ -21,4 +21,9 @@ public class LikeController {
         return likeService.dolike(like);
     }
 
+    @RequestMapping("/undo")
+    public Result dislike(@RequestBody Like like){
+        return likeService.dislike(like);
+    }
+
 }

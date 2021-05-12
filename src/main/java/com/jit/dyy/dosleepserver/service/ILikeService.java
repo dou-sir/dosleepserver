@@ -7,4 +7,6 @@ import com.jit.dyy.dosleepserver.bean.Result;
 public interface ILikeService extends IService<Like> {
 
     Result dolike(Like like);
+
+    Result dislike(Like like);
 }
