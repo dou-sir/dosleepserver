@@ -32,14 +32,24 @@ public class PostController {
         return postService.updatePost(post);
     }
 
-    @RequestMapping("/byTime")
+    @RequestMapping("/bytime")
     public Result findPostByTime(@RequestParam int pageNum){
         return postService.findPostByTime(pageNum);
     }
 
-    @RequestMapping("/byClout")
+    @RequestMapping("/byTime")
+    public Result findPostByTime(@RequestParam int pageNum, @RequestParam int userId){
+        return postService.findPostByTime(pageNum, userId);
+    }
+
+    @RequestMapping("/byclout")
     public Result findPostByClout(@RequestParam int pageNum){
         return postService.findPostByClout(pageNum);
+    }
+
+    @RequestMapping("/byClout")
+    public Result findPostByClout(@RequestParam int pageNum, @RequestParam int userId){
+        return postService.findPostByClout(pageNum, userId);
     }
 
     @RequestMapping("/byUser")
@@ -55,5 +65,10 @@ public class PostController {
     @RequestMapping("/detial")
     public Result getPostDetial(@RequestBody Post post){
         return postService.getPostDetial(post);
+    }
+
+    @RequestMapping("/Detial")
+    public Result getPostDetial(@RequestParam int postId, @RequestParam int userId){
+        return postService.getPostDetial(postId, userId);
     }
 }

@@ -3,6 +3,7 @@ package com.jit.dyy.dosleepserver.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jit.dyy.dosleepserver.bean.Like;
 import com.jit.dyy.dosleepserver.bean.Post;
 import com.jit.dyy.dosleepserver.bean.Result;
 import com.jit.dyy.dosleepserver.bean.User;
@@ -19,6 +20,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     PostMapper postMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    LikeMapper likeMapper;
 
     @Override
     public Result addPost(Post post) {
@@ -104,6 +107,37 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
     }
 
     @Override
+    public Result findPostByTime(int pageNum, int userId) {
+        Result result=new Result();
+        try {
+            Page<Post> postPage = new Page<>(pageNum,10);
+            QueryWrapper<Post> wrapper = new QueryWrapper<>();
+            //时间倒序，最新
+            wrapper.orderByDesc("post_time");
+            postMapper.selectPage(postPage,wrapper);
+            if (postPage.getRecords().isEmpty()){
+                result.setMsg("获取失败");
+                result.setDetail("没有更多");
+            }else {
+                result.setMsg(postPage.getCurrent()+"");
+                result.setFlag(true);
+                for (Post post:postPage.getRecords()){
+                    addClout(post);
+                    post.setIslike(isliked(post.getPostId(), userId));
+                    User owner = getOwner(post.getUserId());
+                    post.setUserName(owner.getUserName());
+                    post.setHeadImg(owner.getHeadImg());
+                }
+                result.setDetail(postPage.getRecords());
+            }
+        }catch (Exception e){
+            result.setMsg(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
     public Result findPostByClout(int pageNum) {
         Result result=new Result();
         try {
@@ -120,6 +154,37 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
                 result.setFlag(true);
                 for (Post post:postPage.getRecords()){
                     addClout(post);
+                    User owner = getOwner(post.getUserId());
+                    post.setUserName(owner.getUserName());
+                    post.setHeadImg(owner.getHeadImg());
+                }
+                result.setDetail(postPage.getRecords());
+            }
+        }catch (Exception e){
+            result.setMsg(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public Result findPostByClout(int pageNum, int userId) {
+        Result result=new Result();
+        try {
+            Page<Post> postPage = new Page<>(pageNum,10);
+            QueryWrapper<Post> wrapper = new QueryWrapper<>();
+            //热度倒序，最热
+            wrapper.orderByDesc("post_clout");
+            postMapper.selectPage(postPage,wrapper);
+            if (postPage.getRecords().isEmpty()){
+                result.setMsg("获取失败");
+                result.setDetail("没有更多");
+            }else {
+                result.setMsg(postPage.getCurrent()+"");
+                result.setFlag(true);
+                for (Post post:postPage.getRecords()){
+                    addClout(post);
+                    post.setIslike(isliked(post.getPostId(), userId));
                     User owner = getOwner(post.getUserId());
                     post.setUserName(owner.getUserName());
                     post.setHeadImg(owner.getHeadImg());
@@ -216,6 +281,34 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         return result;
     }
 
+    @Override
+    public Result getPostDetial(int postId, int userId) {
+        Result result=new Result();
+        Post post = new Post();
+        try {
+            QueryWrapper<Post> wrapper = new QueryWrapper<>();
+            wrapper.eq("post_id",postId);
+            wrapper.eq("state",1);
+            post = postMapper.selectOne(wrapper);
+            if(post != null){
+                addClout(post);
+                result.setMsg("获取成功");
+                result.setFlag(true);
+                post.setIslike(isliked(postId, userId));
+                User owner = getOwner(userId);
+                post.setUserName(owner.getUserName());
+                post.setHeadImg(owner.getHeadImg());
+                result.setDetail(post);
+            }else {
+                result.setMsg("获取失败");
+            }
+        }catch (Exception e){
+            result.setMsg(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     private User getOwner(int userId){
         QueryWrapper<User> wrapper2 = new QueryWrapper<>();
         wrapper2.eq("user_id", userId);
@@ -228,5 +321,16 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
         post.setPostClout(post.getPostClout()+2);
         post.setPostViews(post.getPostViews()+1);
         postMapper.updateById(post);
+    }
+
+    private Boolean isliked(int postId, int userId){
+        QueryWrapper<Like> wrapper = new QueryWrapper<>();
+        wrapper.eq("post_id", postId);
+        wrapper.eq("user_id", userId);
+        Like like = likeMapper.selectOne(wrapper);
+        if (like == null || like.getIslike() == 0){
+            return false;
+        }
+        return true;
     }
 }

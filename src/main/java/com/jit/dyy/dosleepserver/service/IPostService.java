@@ -14,11 +14,17 @@ public interface IPostService extends IService<Post> {
 
     Result findPostByTime(int pageNum);
 
+    Result findPostByTime(int pageNum, int userId);
+
     Result findPostByClout(int pageNum);
+
+    Result findPostByClout(int pageNum, int userId);
 
     Result findPostByUser(int pageNum, int userId);
 
     Result findPostBylike(int pageNum, int userId);
 
     Result getPostDetial(Post post);
+
+    Result getPostDetial(int postId, int userId);
 }

@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @RequestMapping("/login")
+    @RequestMapping({"/login", "/verify"})
     public Result loginByName(@RequestBody User user){
         return userService.loginByName(user);
     }

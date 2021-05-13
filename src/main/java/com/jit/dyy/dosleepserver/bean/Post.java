@@ -70,4 +70,7 @@ public class Post implements Serializable {
 
     @TableField(exist = false)
     private String headImg;
+
+    @TableField(exist = false)
+    private Boolean islike;
 }
