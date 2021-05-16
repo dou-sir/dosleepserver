@@ -52,6 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 if (user2 != null){
                     result.setMsg("注册成功");
                     result.setFlag(true);
+                    user2.setState(1);
+                    result.setDetail(user2);
                 }else {
                     result.setMsg("注册失败");
                     result.setFlag(false);
@@ -147,16 +149,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         wrapper.eq("user_tel",user.getUserTel());
         User user2 = userMapper.selectOne(wrapper);
         if (user2 != null){
-//            user = user2;
-//            user.setState(1);
-//            userMapper.updateById(user);
-            userMapper.deleteById(user2);
-        }
-        String s1 = user.getUserTel().substring(0, 3);
-        String s2 = user.getUserTel().substring(7, 11);
-        user.setUserName(s1+"****"+s2);
-        userMapper.insert(user);
+            user = user2;
+            user.setState(1);
+            userMapper.updateById(user);
+//            userMapper.deleteById(user2);
+        }else {
+            String s1 = user.getUserTel().substring(0, 3);
+            String s2 = user.getUserTel().substring(7, 11);
+            user.setUserName(s1+"****"+s2);
+            userMapper.insert(user);
 //            user = userMapper.selectOne(wrapper);
+        }
+
         return user;
     }
 
